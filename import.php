@@ -29,6 +29,10 @@
 		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' AND type_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 		if ($result = mysqli_query($link, $sql)) {
 			if (mysqli_num_rows($result) > 0) {
+				$row = mysqli_fetch_array($result);
+				if (@$row['id']) {
+					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE id = ' . $row['id']);
+				}
 			} else {
 				echo $resource->name . "<br/>";
 				echo $resource->type . "<br/><br/>";
