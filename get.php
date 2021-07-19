@@ -11,6 +11,7 @@
 	$field = @$_GET['field'];
 	$sort = @$_GET['sort'];
 	$logic = @$_GET['logic'];
+	$group = @$_GET['group'];
 
 	header('Content-Type: application/json');
 
@@ -43,6 +44,38 @@
 				echo $data;
 			}
 		}
+
+	} elseif ($request == 'type_by_group') {
+
+		$val = filter_var($val, FILTER_SANITIZE_STRING);
+
+		if ($field) {
+			$field = filter_var($field, FILTER_SANITIZE_STRING);
+			if ($sort) {
+				$sort = filter_var($sort, FILTER_SANITIZE_STRING);
+				if ($logic) {
+					$logic = filter_var($logic, FILTER_SANITIZE_STRING);
+					$calc_logic = get_logic($logic);
+					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY (SELECT " . $calc_logic . " FROM resources WHERE id = r.id) DESC, id DESC LIMIT 1";
+				} else {
+					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
+				}
+			} else {
+				$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $field . " DESC, id DESC LIMIT 1";
+			}
+		} else {
+			$sql = "SELECT * FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY id DESC LIMIT 1";
+		}
+		if ($result = mysqli_query($link, $sql)) {
+			if (mysqli_num_rows($result) > 0) {
+				$json = mysqli_fetch_all($result, MYSQLI_ASSOC);
+				$data = json_encode($json);
+				echo $data;
+			}
+		}
+
+
+
 
 	} elseif ($request == 'type_by_name_partial') {
 
