@@ -56,8 +56,6 @@
 					$logic = filter_var($logic, FILTER_SANITIZE_STRING);
 					$calc_logic = get_logic($logic);
 					$sql = "SELECT " . $field . " FROM resources r WHERE r.type_name LIKE '%" . $val . "%' AND r.status = 1 ORDER BY (SELECT " . $calc_logic . " FROM resources WHERE id = r.id) DESC, id DESC LIMIT 1";
-					echo $sql;
-					exit;
 				} else {
 					$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
 				}
