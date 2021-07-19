@@ -22,6 +22,8 @@
 	$json = json_encode($xml);
 	$array = json_decode($json);
 
+	mysqli_query($link, 'UPDATE resources SET status = 0');
+
 	foreach ($array->resources->resource as $resource) {
 
 		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' AND type_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
@@ -32,7 +34,7 @@
 				echo $resource->type . "<br/><br/>";
 				echo 'need to add.. <br/>';
 				$insert = "
-					INSERT INTO resources (name, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp)
+					INSERT INTO resources (name, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status)
 					VALUES (
 						" . ((isset($resource->name)) ? "'" . $resource->name . "'" : 'NULL') . ",
 						" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
@@ -46,7 +48,7 @@
 						" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : 'NULL') . ",
 						" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : 'NULL') . ",
 						" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : 'NULL') . ",
-						'" . $resource->available_timestamp . "'
+						'" . $resource->available_timestamp . "', 1
 					)
 				";
 				mysqli_query($link, $insert);

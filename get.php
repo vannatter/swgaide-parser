@@ -27,9 +27,9 @@
 		$val = filter_var($val, FILTER_SANITIZE_STRING);
 		if ($field) {
 			$field = filter_var($field, FILTER_SANITIZE_STRING);
-			$sql = "SELECT " . $field . " FROM resources WHERE type_code = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT " . $field . " FROM resources WHERE type_code = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		} else {
-			$sql = "SELECT * FROM resources WHERE type_code = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT * FROM resources WHERE type_code = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		}
 
 		if ($result = mysqli_query($link, $sql)) {
@@ -45,9 +45,9 @@
 		$val = filter_var($val, FILTER_SANITIZE_STRING);
 		if ($field) {
 			$field = filter_var($field, FILTER_SANITIZE_STRING);
-			$sql = "SELECT " . $field . " FROM resources WHERE type_name = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT " . $field . " FROM resources WHERE type_name = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		} else {
-			$sql = "SELECT * FROM resources WHERE type_name = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT * FROM resources WHERE type_name = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		}
 
 		if ($result = mysqli_query($link, $sql)) {
@@ -63,9 +63,9 @@
 		$val = filter_var($val, FILTER_SANITIZE_STRING);
 		if ($field) {
 			$field = filter_var($field, FILTER_SANITIZE_STRING);
-			$sql = "SELECT " . $field . " FROM resources WHERE name = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT " . $field . " FROM resources WHERE name = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		} else {
-			$sql = "SELECT * FROM resources WHERE name = '" . $val . "' ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT * FROM resources WHERE name = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		}
 
 		if ($result = mysqli_query($link, $sql)) {

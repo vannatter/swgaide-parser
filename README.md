@@ -15,6 +15,7 @@
         fl varchar(50) DEFAULT NULL,
         pe varchar(50) DEFAULT NULL,
         timestamp varchar(255) DEFAULT NULL,
+        status int(11) DEFAULT 1,
         PRIMARY KEY (id)
     ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 `
