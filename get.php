@@ -56,15 +56,15 @@
 				if ($logic) {
 					$logic = filter_var($logic, FILTER_SANITIZE_STRING);
 					$calc_logic = get_logic($logic);
-					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY (SELECT " . $calc_logic . " FROM resources WHERE id = r.id) DESC, id DESC LIMIT 1";
+					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM `groups` g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY (SELECT " . $calc_logic . " FROM resources WHERE id = r.id) DESC, id DESC LIMIT 1";
 				} else {
-					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
+					$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM `groups` g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
 				}
 			} else {
-				$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $field . " DESC, id DESC LIMIT 1";
+				$sql = "SELECT " . $field . " FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM `groups` g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY " . $field . " DESC, id DESC LIMIT 1";
 			}
 		} else {
-			$sql = "SELECT * FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM groups g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY id DESC LIMIT 1";
+			$sql = "SELECT * FROM resources r WHERE TYPE_CODE IN (SELECT gi.type_code FROM `groups` g INNER JOIN group_items gi ON gi.group_id = g.id WHERE g.name = '" . $val . "') AND status = 1 ORDER BY id DESC LIMIT 1";
 		}
 
 		if (@$_GET['debug'] == 1) {
