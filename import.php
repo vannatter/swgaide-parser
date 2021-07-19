@@ -26,6 +26,12 @@
 
 	foreach ($array->resources->resource as $resource) {
 
+		if (@$_GET['debug'] == 1) {
+			echo "<pre style='background-color:pink;'>";
+			var_dump($resource);
+			echo "</pre>";
+		}
+
 		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' AND type_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 		if ($result = mysqli_query($link, $sql)) {
 			if (mysqli_num_rows($result) > 0) {
