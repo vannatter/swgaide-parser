@@ -80,9 +80,6 @@
 			}
 		}
 
-
-
-
 	} elseif ($request == 'type_by_name_partial') {
 
 		$val = filter_var($val, FILTER_SANITIZE_STRING);
@@ -105,6 +102,11 @@
 			}
 		} else {
 			$sql = "SELECT * FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY id DESC LIMIT 1";
+		}
+
+		if (@$_GET['debug'] == 1) {
+			echo $sql;
+			exit;
 		}
 
 		if ($result = mysqli_query($link, $sql)) {
