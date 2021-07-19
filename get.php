@@ -9,6 +9,7 @@
 	$val = @$_GET['val'];
 	$request = $_GET['request'];
 	$field = @$_GET['field'];
+	header('Content-Type: application/json');
 
 	if ($request == 'types') {
 
