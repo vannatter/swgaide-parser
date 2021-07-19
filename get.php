@@ -9,6 +9,7 @@
 	$val = @$_GET['val'];
 	$request = $_GET['request'];
 	$field = @$_GET['field'];
+	$sort = @$_GET['sort'];
 	header('Content-Type: application/json');
 
 	if ($request == 'types') {
@@ -31,6 +32,29 @@
 			$sql = "SELECT " . $field . " FROM resources WHERE type_code = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
 		} else {
 			$sql = "SELECT * FROM resources WHERE type_code = '" . $val . "' AND status = 1 ORDER BY id DESC LIMIT 1";
+		}
+
+		if ($result = mysqli_query($link, $sql)) {
+			if (mysqli_num_rows($result) > 0) {
+				$json = mysqli_fetch_all($result, MYSQLI_ASSOC);
+				$data = json_encode($json);
+				echo $data;
+			}
+		}
+
+	} elseif ($request == 'type_by_name_partial') {
+
+		$val = filter_var($val, FILTER_SANITIZE_STRING);
+		if ($field) {
+			$field = filter_var($field, FILTER_SANITIZE_STRING);
+			if ($sort) {
+				$sort = filter_var($sort, FILTER_SANITIZE_STRING);
+				$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
+			} else {
+				$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $field . " DESC, id DESC LIMIT 1";
+			}
+		} else {
+			$sql = "SELECT * FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY id DESC LIMIT 1";
 		}
 
 		if ($result = mysqli_query($link, $sql)) {
