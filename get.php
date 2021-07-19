@@ -10,6 +10,8 @@
 	$request = $_GET['request'];
 	$field = @$_GET['field'];
 	$sort = @$_GET['sort'];
+	$logic = @$_GET['logic'];
+
 	header('Content-Type: application/json');
 
 	if ($request == 'types') {
@@ -49,7 +51,18 @@
 			$field = filter_var($field, FILTER_SANITIZE_STRING);
 			if ($sort) {
 				$sort = filter_var($sort, FILTER_SANITIZE_STRING);
-				$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
+
+				if ($logic) {
+					$logic = filter_var($logic, FILTER_SANITIZE_STRING);
+					$calc_logic = get_logic($logic);
+					$sql = "SELECT " . $field . " FROM resources r WHERE r.type_name LIKE '%" . $val . "%' AND r.status = 1 ORDER BY (SELECT " . $calc_logic . " FROM resources WHERE id = r.id) DESC, id DESC LIMIT 1";
+					echo $sql;
+					exit;
+				} else {
+					$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $sort . " DESC, id DESC LIMIT 1";
+				}
+
+
 			} else {
 				$sql = "SELECT " . $field . " FROM resources WHERE type_name LIKE '%" . $val . "%' AND status = 1 ORDER BY " . $field . " DESC, id DESC LIMIT 1";
 			}
