@@ -114,6 +114,9 @@
 				$json = mysqli_fetch_all($result, MYSQLI_ASSOC);
 				$data = json_encode($json);
 				echo $data;
+			} else {
+				$data = json_encode(array('error' => 'N/A'));
+				echo $data;
 			}
 		}
 
