@@ -1,6 +1,7 @@
 <?php
 
 	include('settings.php');
+	include('functions.php');
 	$link = mysqli_connect("localhost", $db_user, $db_pass, $db_database);
 	if ($link === false){
 		die("ERROR: Could not connect. " . mysqli_connect_error());
