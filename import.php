@@ -47,9 +47,9 @@
 				$insert = "
 					INSERT INTO resources (name, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status)
 					VALUES (
-						" . ((isset($resource->name)) ? "'" . $resource->name . "'" : 'NULL') . ",
+						" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
 						" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
-						" . ((isset($resource->type)) ? "'" . $resource->type . "'" : 'NULL') . ",
+						" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
 						" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
 						" . ((isset($resource->stats->dr)) ? "'" . $resource->stats->dr . "'" : '0') . ",
 						" . ((isset($resource->stats->hr)) ? "'" . $resource->stats->hr . "'" : '0') . ",
