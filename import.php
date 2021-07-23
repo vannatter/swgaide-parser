@@ -48,6 +48,26 @@
 						$rowx = mysqli_fetch_array($resultx);
 						if (@$rowx['id']) {
 							$resource_type_id = $rowx['id'];
+						} else {
+							$resource_type_id = null;
+						}
+					} else {
+
+						$sqli = "INSERT INTO resource_types (resource_code, resource_name) VALUES ('" . addslashes($resource->swgaide_type_id) . "', '" . addslashes($resource->type) . "')";
+						mysqli_query($link, $sqli);
+
+						$sqli = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
+						if ($resultx = mysqli_query($link, $sqlx)) {
+							if (mysqli_num_rows($resultx) > 0) {
+								$rowx = mysqli_fetch_array($resultx);
+								if (@$rowx['id']) {
+									$resource_type_id = $rowx['id'];
+								} else {
+									$resource_type_id = null;
+								}
+							} else {
+								$resource_type_id = null;
+							}
 						}
 					}
 				} else {
