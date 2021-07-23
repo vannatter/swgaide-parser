@@ -41,13 +41,27 @@
 					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE id = ' . $row['id']);
 				}
 			} else {
+
+				$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
+				if ($resultx = mysqli_query($link, $sqlx)) {
+					if (mysqli_num_rows($resultx) > 0) {
+						$rowx = mysqli_fetch_array($resultx);
+						if (@$rowx['id']) {
+							$resource_type_id = $rowx['id'];
+						}
+					}
+				} else {
+					$resource_type_id = null;
+				}
+
 				echo $resource->name . "<br/>";
-				echo $resource->type . "<br/><br/>";
-				echo 'need to add.. <br/>';
+				echo $resource->type . "<br/>";
+				echo 'need to add.. <br/><br/>';
 				$insert = "
-					INSERT INTO resources (name, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status)
+					INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
 					VALUES (
 						" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
+						" . $resource_type_id . ", 
 						" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
 						" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
 						" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
@@ -59,13 +73,36 @@
 						" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
 						" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
 						" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-						'" . $resource->available_timestamp . "', 1
+						'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "'
 					)
 				";
 				mysqli_query($link, $insert);
 			}
 		}
 	}
+
+	// run weighted averages
+	$sql = "SELECT * FROM resources WHERE weighted_as1 is null OR weighted_as2 is null";
+	if ($result = mysqli_query($link, $sql)) {
+		if (mysqli_num_rows($result) > 0) {
+			$data = mysqli_fetch_all($result);
+			foreach ($data as $d) {
+				$oq = $d[9];
+				$sr = $d[10];
+				$dr = $d[6];
+
+				if (!$oq) { $oq = 0; }
+				if (!$sr) { $sr = 0; }
+				if (!$dr) { $dr = 0; }
+
+				$as1 = floor((($oq+$sr)/2)+($dr*0.1));
+				$as2 = floor(($oq+$sr+$dr)/3);
+				$sqlx = "UPDATE resources SET weighted_as1 = '" . $as1 . "', weighted_as2 = '" . $as2 . "' WHERE id = '" . $d[0] . "'";
+				mysqli_query($link, $sqlx);
+			}
+		}
+	}
+
 	mysqli_close($link);
 	echo "done importing..";
 ?>
