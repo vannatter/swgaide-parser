@@ -223,7 +223,7 @@
 				if (!$dr) { $dr = 0; }
 				if (!$pe) { $pe = 0; }
 
-				$as1 = floor((($oq+$sr)/2)+($dr*0.1));
+				$as1 = floor((($oq+$sr)/2)+($dr*0.01));
 				$as2 = floor(($oq+$sr+$dr)/3);
 				$chef1 = floor( ($pe*0.66) + ($oq*0.33) );
 
