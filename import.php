@@ -207,16 +207,16 @@
 	}
 
 	// run weighted averages
-	$sql = "SELECT * FROM resources WHERE weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null";
+	$sql = "SELECT id, oq, sr, dr, pe FROM resources WHERE weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null";
 	if ($result = mysqli_query($link, $sql)) {
 		if (mysqli_num_rows($result) > 0) {
 			$data = mysqli_fetch_all($result);
 			foreach ($data as $d) {
 
-				$oq = $d[9];
-				$sr = $d[10];
-				$dr = $d[6];
-				$pe = $d[13];
+				$oq = $d[1];
+				$sr = $d[2];
+				$dr = $d[3];
+				$pe = $d[4];
 
 				if (!$oq) { $oq = 0; }
 				if (!$sr) { $sr = 0; }
