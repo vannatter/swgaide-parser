@@ -7,7 +7,8 @@
 		die("ERROR: Could not connect. " . mysqli_connect_error());
 	}
 
-	$linkToXmlFile = 'https://swgaide.com/pub/exports/currentresources_162.xml.gz';
+	// swgaide import..
+	$linkToXmlFile = $swga_feed;
 	$ch = curl_init();
 	curl_setopt_array($ch, array(
 	CURLOPT_URL => $linkToXmlFile
@@ -28,11 +29,11 @@
 	if (isset($array->resources->resource)) {
 		foreach (@$array->resources->resource as $resource) {
 
-			if (@$_GET['debug'] == 1) {
-				echo "<pre style='background-color:pink;'>";
-				var_dump($resource);
-				echo "</pre>";
-			}
+//			if (@$_GET['debug'] == 1) {
+//				echo "<pre style='background-color:pink;'>";
+//				var_dump($resource);
+//				echo "</pre>";
+//			}
 
 			$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' AND type_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 			if ($result = mysqli_query($link, $sql)) {
@@ -57,7 +58,7 @@
 							$sqli = "INSERT INTO resource_types (resource_code, resource_name) VALUES ('" . addslashes($resource->swgaide_type_id) . "', '" . addslashes($resource->type) . "')";
 							mysqli_query($link, $sqli);
 
-							$sqli = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
+							$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 							if ($resultx = mysqli_query($link, $sqlx)) {
 								if (mysqli_num_rows($resultx) > 0) {
 									$rowx = mysqli_fetch_array($resultx);
@@ -82,7 +83,7 @@
 						INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
 						VALUES (
 							" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
-							" . $resource_type_id . ", 
+							" . $resource_type_id . ",
 							" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
 							" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
 							" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
@@ -101,6 +102,108 @@
 				}
 			}
 		}
+	}
+
+	// galaxy harvester import (match on name to see if we need to add it or not)
+	$linkToXmlFile = $gh_feed;
+	$ch = curl_init();
+	curl_setopt_array($ch, array(
+	CURLOPT_URL => $linkToXmlFile
+		, CURLOPT_HEADER => 0
+		, CURLOPT_RETURNTRANSFER => 1
+	));
+
+	$data = curl_exec($ch);
+	curl_close($ch);
+	$xml = simplexml_load_string($data, "SimpleXMLElement", LIBXML_NOCDATA);
+	$json = json_encode($xml);
+	$array = json_decode($json);
+
+	foreach ($array->resource as $resource) {
+
+		// do stupid category cleanup to match formatting..
+		$resource_category_name = $resource->resource_type;
+		$resource_category_name = str_replace("Kashyyyk ", "Kashyyykian ", $resource_category_name);
+		$resource_category_name = str_replace("Corellian Fiberplast", "Corellia Fiberplast", $resource_category_name);
+		$resource_category_name = str_replace("Corellian Berry Fruit", "Corellia Berry Fruit", $resource_category_name);
+		$resource_category_name = str_replace("Corellian Evergreen Wood", "Corellia Evergreen Wood", $resource_category_name);
+		$resource_category_name = str_replace("Corellian Flower Fruit", "Corellia Flower Fruit", $resource_category_name);
+		$resource_category_name = str_replace("Egg Meat", "Egg", $resource_category_name);
+
+		/////
+
+		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' LIMIT 1";
+		if ($result = mysqli_query($link, $sql)) {
+
+			if (mysqli_num_rows($result) > 0) {
+				$row = mysqli_fetch_array($result);
+				if (@$row['id']) {
+					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE status = 0 AND id = ' . $row['id']);
+				}
+			} else {
+				echo "we dont have this.. <br/>";
+
+				$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
+				if ($resultx = mysqli_query($link, $sqlx)) {
+					if (mysqli_num_rows($resultx) > 0) {
+						$rowx = mysqli_fetch_array($resultx);
+						if (@$rowx['id']) {
+							$resource_type_id = $rowx['id'];
+						} else {
+							$resource_type_id = null;
+						}
+					} else {
+
+						$sqli = "INSERT INTO resource_types (resource_code, resource_name) VALUES ('', '" . addslashes($resource_category_name) . "')";
+						mysqli_query($link, $sqli);
+
+						$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
+						if ($resultx = mysqli_query($link, $sqlx)) {
+							if (mysqli_num_rows($resultx) > 0) {
+								$rowx = mysqli_fetch_array($resultx);
+								if (@$rowx['id']) {
+									$resource_type_id = $rowx['id'];
+								} else {
+									$resource_type_id = null;
+								}
+							} else {
+								$resource_type_id = null;
+							}
+						}
+					}
+				} else {
+					$resource_type_id = null;
+				}
+
+				echo $resource->name . "<br/>";
+				echo $resource->resource_type . "<br/>";
+				$timestamp = strtotime($resource->enter_date);
+
+				$insert = "
+					INSERT INTO resources (source, name, resource_type_id, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
+					VALUES (2, 
+						" . ((isset($resource->name)) ? "'" . addslashes(ucfirst($resource->name)) . "'" : 'NULL') . ",
+						" . $resource_type_id . ", NULL, 
+						" . ((isset($resource->resource_type)) ? "'" . addslashes($resource_category_name) . "'" : 'NULL') . ",
+						" . ((isset($resource->stats->CR)) ? "'" . $resource->stats->CR . "'" : '0') . ",
+						" . ((isset($resource->stats->DR)) ? "'" . $resource->stats->DR . "'" : '0') . ",
+						" . ((isset($resource->stats->HR)) ? "'" . $resource->stats->HR . "'" : '0') . ",
+						" . ((isset($resource->stats->MA)) ? "'" . $resource->stats->MA . "'" : '0') . ",
+						" . ((isset($resource->stats->OQ)) ? "'" . $resource->stats->OQ . "'" : '0') . ",
+						" . ((isset($resource->stats->SR)) ? "'" . $resource->stats->SR . "'" : '0') . ",
+						" . ((isset($resource->stats->UT)) ? "'" . $resource->stats->UT . "'" : '0') . ",
+						" . ((isset($resource->stats->FL)) ? "'" . $resource->stats->FL . "'" : '0') . ",
+						" . ((isset($resource->stats->PE)) ? "'" . $resource->stats->PE . "'" : '0') . ",
+						'" . $timestamp . "', 1, NULL
+					)
+				";
+				mysqli_query($link, $insert);
+				echo 'need to add.. <br/><br/>';
+
+			}
+
+		}
+
 	}
 
 	// run weighted averages
