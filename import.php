@@ -227,6 +227,9 @@
 				$as2 = floor(($oq+$sr+$dr)/3);
 				$chef1 = floor( ($pe*0.66) + ($oq*0.33) );
 
+				echo "<pre>";
+				print_r($d);
+				echo "</pre>";
 				echo $oq . " + " . $sr . " / 2 = " . (($oq+$sr)/2) . " <br/>";
 
 				$sqlx = "UPDATE resources SET 
