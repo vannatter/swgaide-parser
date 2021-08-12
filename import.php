@@ -138,7 +138,7 @@
 			if (mysqli_num_rows($result) > 0) {
 				$row = mysqli_fetch_array($result);
 				if (@$row['id']) {
-					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE status = 0 AND id = ' . $row['id']);
+					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE source = 2 AND status = 0 AND id = ' . $row['id']);
 				}
 			} else {
 				echo "we dont have this.. <br/>";
