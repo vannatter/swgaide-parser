@@ -4,7 +4,7 @@
 
 		$logic = '';
 		if ($type == 'as') {
-			$logic = '((sum(oq+sr)/2)+(dr*0.1))';
+			$logic = '((sum(oq+sr)/2)+(dr*0.01))';
 		} elseif ($type == 'as2') {
 			$logic = '((sum(oq+sr+dr)/3))';
 		}
