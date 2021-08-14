@@ -24,7 +24,7 @@
 	$json = json_encode($xml);
 	$array = json_decode($json);
 
-	mysqli_query($link, 'UPDATE resources SET status = 0 WHERE status = 1');
+	mysqli_query($link, 'UPDATE resources SET status = 0 WHERE status = 1 AND source <> 3');
 
 	if (isset($array->resources->resource)) {
 		foreach (@$array->resources->resource as $resource) {
