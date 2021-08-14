@@ -80,13 +80,14 @@
 					echo $resource->type . "<br/>";
 					echo 'need to add.. <br/><br/>';
 					$insert = "
-						INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
+						INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
 						VALUES (
 							" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
 							" . $resource_type_id . ",
 							" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
 							" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
 							" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
+							" . ((isset($resource->stats->cd)) ? "'" . $resource->stats->cd . "'" : '0') . ",
 							" . ((isset($resource->stats->dr)) ? "'" . $resource->stats->dr . "'" : '0') . ",
 							" . ((isset($resource->stats->hr)) ? "'" . $resource->stats->hr . "'" : '0') . ",
 							" . ((isset($resource->stats->ma)) ? "'" . $resource->stats->ma . "'" : '0') . ",
@@ -180,12 +181,13 @@
 				$timestamp = strtotime($resource->enter_date);
 
 				$insert = "
-					INSERT INTO resources (source, name, resource_type_id, type_code, type_name, cr, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
+					INSERT INTO resources (source, name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
 					VALUES (2, 
 						" . ((isset($resource->name)) ? "'" . addslashes(ucfirst($resource->name)) . "'" : 'NULL') . ",
 						" . $resource_type_id . ", NULL, 
 						" . ((isset($resource->resource_type)) ? "'" . addslashes($resource_category_name) . "'" : 'NULL') . ",
 						" . ((isset($resource->stats->CR)) ? "'" . $resource->stats->CR . "'" : '0') . ",
+						" . ((isset($resource->stats->CD)) ? "'" . $resource->stats->CD . "'" : '0') . ",
 						" . ((isset($resource->stats->DR)) ? "'" . $resource->stats->DR . "'" : '0') . ",
 						" . ((isset($resource->stats->HR)) ? "'" . $resource->stats->HR . "'" : '0') . ",
 						" . ((isset($resource->stats->MA)) ? "'" . $resource->stats->MA . "'" : '0') . ",
