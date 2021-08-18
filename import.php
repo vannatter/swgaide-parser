@@ -209,7 +209,7 @@
 	}
 
 	// run weighted averages
-	$sql = "SELECT id, oq, sr, dr, pe FROM resources WHERE weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null";
+	$sql = "SELECT id, oq, sr, dr, pe, cd, ut FROM resources WHERE weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null or weighted_ws1 is null or weighted_ws2 is null or weighted_ws3 is null or weighted_ws4 is null or weighted_ws5 is null";
 	if ($result = mysqli_query($link, $sql)) {
 		if (mysqli_num_rows($result) > 0) {
 			$data = mysqli_fetch_all($result);
@@ -219,20 +219,35 @@
 				$sr = $d[2];
 				$dr = $d[3];
 				$pe = $d[4];
+				$cd = $d[5];
+				$ut = $d[6];
 
 				if (!$oq) { $oq = 0; }
 				if (!$sr) { $sr = 0; }
 				if (!$dr) { $dr = 0; }
 				if (!$pe) { $pe = 0; }
+				if (!$cd) { $cd = 0; }
+				if (!$ut) { $ut = 0; }
 
 				$as1 = floor((($oq+$sr)/2));
 				$as2 = floor(($oq+$sr+$dr)/3);
 				$chef1 = floor( ($pe*0.66) + ($oq*0.33) );
 
+				$ws1 = floor( ($sr*0.66) + ($oq*0.33) );
+				$ws2 = floor((($oq+$cd)/2));
+				$ws3 = floor((($oq+$sr)/2));
+				$ws4 = floor( ($oq*0.66) + ($sr*0.33) );
+				$ws5 = floor((($ut+$sr)/2));
+
 				$sqlx = "UPDATE resources SET 
 							weighted_as1 = '" . $as1 . "', 
 							weighted_as2 = '" . $as2 . "',
-							weighted_chef1 = '" . $chef1 . "'
+							weighted_chef1 = '" . $chef1 . "',
+							weighted_ws1 = '" . $ws1 . "',
+							weighted_ws2 = '" . $ws2 . "',
+							weighted_ws3 = '" . $ws3 . "',
+							weighted_ws4 = '" . $ws4 . "',
+							weighted_ws5 = '" . $ws5 . "'
 					 	 WHERE id = '" . $d[0] . "'";
 				mysqli_query($link, $sqlx);
 			}
