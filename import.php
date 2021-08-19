@@ -238,6 +238,7 @@
 				$ws3 = floor((($oq+$sr)/2));
 				$ws4 = floor( ($oq*0.66) + ($sr*0.33) );
 				$ws5 = floor((($ut+$sr)/2));
+				$ws6 = floor( ($cd*0.66) + ($oq*0.33) );
 
 				$sqlx = "UPDATE resources SET 
 							weighted_as1 = '" . $as1 . "', 
@@ -247,7 +248,8 @@
 							weighted_ws2 = '" . $ws2 . "',
 							weighted_ws3 = '" . $ws3 . "',
 							weighted_ws4 = '" . $ws4 . "',
-							weighted_ws5 = '" . $ws5 . "'
+							weighted_ws5 = '" . $ws5 . "',
+							weighted_ws6 = '" . $ws6 . "'
 					 	 WHERE id = '" . $d[0] . "'";
 				mysqli_query($link, $sqlx);
 			}
