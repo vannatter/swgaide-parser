@@ -131,7 +131,7 @@
 		$resource_category_name = str_replace("Corellian Flower Fruit", "Corellia Flower Fruit", $resource_category_name);
 		$resource_category_name = str_replace("Egg Meat", "Egg", $resource_category_name);
 
-		/////
+		///// can we make some assumptions on planet based on the resource name?
 
 		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' LIMIT 1";
 		if ($result = mysqli_query($link, $sql)) {
@@ -209,7 +209,7 @@
 	}
 
 	// run weighted averages
-	$sql = "SELECT id, oq, sr, dr, pe, cd, ut, fl FROM resources WHERE weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null OR weighted_chef2 is null OR weighted_chef3 is null OR weighted_chef4 is null or weighted_ws1 is null or weighted_ws2 is null or weighted_ws3 is null or weighted_ws4 is null or weighted_ws5 is null or weighted_ws6 is null";
+	$sql = "SELECT id, oq, sr, dr, pe, cd, ut, fl FROM resources WHERE weighted_art1 is null OR weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null OR weighted_chef2 is null OR weighted_chef3 is null OR weighted_chef4 is null OR weighted_chef5 is null OR weighted_chef6 is null OR weighted_chef7 is null or weighted_ws1 is null or weighted_ws2 is null or weighted_ws3 is null or weighted_ws4 is null or weighted_ws5 is null or weighted_ws6 is null";
 	if ($result = mysqli_query($link, $sql)) {
 		if (mysqli_num_rows($result) > 0) {
 			$data = mysqli_fetch_all($result);
@@ -234,10 +234,15 @@
 				$as1 = floor((($oq+$sr)/2));
 				$as2 = floor(($oq+$sr+$dr)/3);
 
+				$art1 = floor( ($sr) );
+
 				$chef1 = floor( ($pe*0.66) + ($oq*0.33) );
 				$chef2 = floor( ($fl*0.66) + ($oq*0.33) );
 				$chef3 = floor( ($dr*0.75) + ($oq*0.25) );
-				$chef4 = floor( ($dr*0.25) + ($pe*0.75) );
+				$chef4 = floor( ($dr*0.25) + ($oq*0.75) );
+				$chef5 = floor( ($fl*0.20) + ($pe*0.30) + ($oq*0.50) );
+				$chef6 = floor( ($dr*0.25) + ($sr*0.75) );
+				$chef7 = floor( ($dr*0.25) + ($pe*0.75) );
 
 				$ws1 = floor( ($sr*0.66) + ($oq*0.33) );
 				$ws2 = floor((($oq+$cd)/2));
@@ -249,10 +254,14 @@
 				$sqlx = "UPDATE resources SET 
 							weighted_as1 = '" . $as1 . "', 
 							weighted_as2 = '" . $as2 . "',
+							weighted_art1 = '" . $art1 . "', 
 							weighted_chef1 = '" . $chef1 . "',
 							weighted_chef2 = '" . $chef2 . "',
 							weighted_chef3 = '" . $chef3 . "',
 							weighted_chef4 = '" . $chef4 . "',
+							weighted_chef5 = '" . $chef5 . "',
+							weighted_chef6 = '" . $chef6 . "',
+							weighted_chef7 = '" . $chef7 . "',
 							weighted_ws1 = '" . $ws1 . "',
 							weighted_ws2 = '" . $ws2 . "',
 							weighted_ws3 = '" . $ws3 . "',
