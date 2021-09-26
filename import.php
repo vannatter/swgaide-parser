@@ -243,6 +243,8 @@
 				$chef5 = floor( ($fl*0.20) + ($pe*0.30) + ($oq*0.50) );
 				$chef6 = floor( ($dr*0.25) + ($sr*0.75) );
 				$chef7 = floor( ($dr*0.25) + ($pe*0.75) );
+				$chef8 = floor( ($oq) );
+				$chef9 = floor( ($dr) );
 
 				$ws1 = floor( ($sr*0.66) + ($oq*0.33) );
 				$ws2 = floor((($oq+$cd)/2));
@@ -262,6 +264,8 @@
 							weighted_chef5 = '" . $chef5 . "',
 							weighted_chef6 = '" . $chef6 . "',
 							weighted_chef7 = '" . $chef7 . "',
+							weighted_chef8 = '" . $chef8 . "',
+							weighted_chef9 = '" . $chef9 . "',
 							weighted_ws1 = '" . $ws1 . "',
 							weighted_ws2 = '" . $ws2 . "',
 							weighted_ws3 = '" . $ws3 . "',
