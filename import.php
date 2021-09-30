@@ -253,6 +253,11 @@
 				$ws5 = floor((($ut+$sr)/2));
 				$ws6 = floor( ($cd*0.66) + ($oq*0.33) );
 
+				$med1 = floor( ($oq*0.66) + ($ut*0.33) );
+				$med2 = floor( ($oq*0.66) + ($pe*0.33) );
+				$med3 = floor( ($oq*0.66) + ($dr*0.33) );
+				$med4 = floor( ($oq*0.75) + ($dr*0.25) );
+
 				$sqlx = "UPDATE resources SET 
 							weighted_as1 = '" . $as1 . "', 
 							weighted_as2 = '" . $as2 . "',
@@ -266,6 +271,10 @@
 							weighted_chef7 = '" . $chef7 . "',
 							weighted_chef8 = '" . $chef8 . "',
 							weighted_chef9 = '" . $chef9 . "',
+							weighted_med1 = '" . $med1 . "',
+							weighted_med2 = '" . $med2 . "',
+							weighted_med3 = '" . $med3 . "',
+							weighted_med4 = '" . $med4 . "',
 							weighted_ws1 = '" . $ws1 . "',
 							weighted_ws2 = '" . $ws2 . "',
 							weighted_ws3 = '" . $ws3 . "',
