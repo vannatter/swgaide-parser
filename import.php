@@ -78,28 +78,34 @@
 
 					echo $resource->name . "<br/>";
 					echo $resource->type . "<br/>";
-					echo 'need to add.. <br/><br/>';
-					$insert = "
-						INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
-						VALUES (
-							" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
-							" . $resource_type_id . ",
-							" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
-							" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
-							" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
-							" . ((isset($resource->stats->cd)) ? "'" . $resource->stats->cd . "'" : '0') . ",
-							" . ((isset($resource->stats->dr)) ? "'" . $resource->stats->dr . "'" : '0') . ",
-							" . ((isset($resource->stats->hr)) ? "'" . $resource->stats->hr . "'" : '0') . ",
-							" . ((isset($resource->stats->ma)) ? "'" . $resource->stats->ma . "'" : '0') . ",
-							" . ((isset($resource->stats->oq)) ? "'" . $resource->stats->oq . "'" : '0') . ",
-							" . ((isset($resource->stats->sr)) ? "'" . $resource->stats->sr . "'" : '0') . ",
-							" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
-							" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
-							" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-							'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "'
-						)
-					";
-					mysqli_query($link, $insert);
+
+					if ($resource->stats->oq) {
+						echo 'need to add.. <br/><br/>';
+						$insert = "
+							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
+							VALUES (
+								" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
+								" . $resource_type_id . ",
+								" . ((isset($resource->swgaide_type_id)) ? "'" . $resource->swgaide_type_id . "'" : 'NULL') . ",
+								" . ((isset($resource->type)) ? "'" . addslashes($resource->type) . "'" : 'NULL') . ",
+								" . ((isset($resource->stats->cr)) ? "'" . $resource->stats->cr . "'" : '0') . ",
+								" . ((isset($resource->stats->cd)) ? "'" . $resource->stats->cd . "'" : '0') . ",
+								" . ((isset($resource->stats->dr)) ? "'" . $resource->stats->dr . "'" : '0') . ",
+								" . ((isset($resource->stats->hr)) ? "'" . $resource->stats->hr . "'" : '0') . ",
+								" . ((isset($resource->stats->ma)) ? "'" . $resource->stats->ma . "'" : '0') . ",
+								" . ((isset($resource->stats->oq)) ? "'" . $resource->stats->oq . "'" : '0') . ",
+								" . ((isset($resource->stats->sr)) ? "'" . $resource->stats->sr . "'" : '0') . ",
+								" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
+								" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
+								" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
+								'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "'
+							)
+						";
+						mysqli_query($link, $insert);
+					} else {
+						echo 'stats are blank, not adding shit... <br/><br/>';
+
+					}
 				}
 			}
 		}
