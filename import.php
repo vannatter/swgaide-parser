@@ -131,6 +131,7 @@
 		// do stupid category cleanup to match formatting..
 		$resource_category_name = $resource->resource_type;
 		$resource_category_name = str_replace("Kashyyyk ", "Kashyyykian ", $resource_category_name);
+		$resource_category_name = str_replace("Dantooinian ", "Dantooine ", $resource_category_name);
 		$resource_category_name = str_replace("Corellian Fiberplast", "Corellia Fiberplast", $resource_category_name);
 		$resource_category_name = str_replace("Corellian Berry Fruit", "Corellia Berry Fruit", $resource_category_name);
 		$resource_category_name = str_replace("Corellian Evergreen Wood", "Corellia Evergreen Wood", $resource_category_name);
