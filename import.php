@@ -24,7 +24,7 @@
 	$json = json_encode($xml);
 	$array = json_decode($json);
 
-	mysqli_query($link, 'UPDATE resources SET status = 0 WHERE status = 1 AND source <> 3');
+	mysqli_query($link, 'UPDATE resources SET status = 0 WHERE status = 1 AND source < 3');
 
 	if (isset($array->resources->resource)) {
 		foreach (@$array->resources->resource as $resource) {
@@ -35,12 +35,66 @@
 //				echo "</pre>";
 //			}
 
+			$resource_category_name = $resource->type;
+
+			// can we make some assumptions on planet based on the resource name?
+			$planet_corellia = 0;
+			$planet_dantooine = 0;
+			$planet_dathomir = 0;
+			$planet_endor = 0;
+			$planet_lok = 0;
+			$planet_naboo = 0;
+			$planet_rori = 0;
+			$planet_talus = 0;
+			$planet_tatooine = 0;
+			$planet_yavin4 = 0;
+			$planet_kashyyyk = 0;
+			$planet_mustafar = 0;
+
+			if (strpos(strtolower($resource_category_name), 'corellia') !== false) {
+				$planet_corellia = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'dantooin') !== false) {
+				$planet_dantooine = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'dathomir') !== false) {
+				$planet_dathomir = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'endor') !== false) {
+				$planet_endor = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'lokian') !== false) {
+				$planet_lok = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'naboo') !== false) {
+				$planet_naboo = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'rori') !== false) {
+				$planet_rori = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'talus') !== false) {
+				$planet_talus = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'tatooin') !== false) {
+				$planet_tatooine = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'yavin') !== false) {
+				$planet_yavin4 = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'kashyyyk') !== false) {
+				$planet_kashyyyk = 1;
+			}
+			if (strpos(strtolower($resource_category_name), 'mustafar') !== false) {
+				$planet_mustafar = 1;
+			}
+
 			$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' AND type_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 			if ($result = mysqli_query($link, $sql)) {
 				if (mysqli_num_rows($result) > 0) {
 					$row = mysqli_fetch_array($result);
 					if (@$row['id']) {
 						mysqli_query($link, 'UPDATE resources SET status = 1 WHERE id = ' . $row['id']);
+						// todo: update stats when they are updates
 					}
 				} else {
 
@@ -79,10 +133,23 @@
 					echo $resource->name . "<br/>";
 					echo $resource->type . "<br/>";
 
-					if ($resource->stats->oq) {
+					if (@$resource->stats->oq) {
 						echo 'need to add.. <br/><br/>';
 						$insert = "
-							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
+							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
+								planet_corellia,
+								planet_dantooine,
+								planet_dathomir,
+								planet_endor,
+								planet_lok,
+								planet_naboo,
+								planet_rori,
+								planet_talus,
+								planet_tatooine,
+								planet_yavin4,
+								planet_kashyyyk,
+								planet_mustafar
+							)
 							VALUES (
 								" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
 								" . $resource_type_id . ",
@@ -98,7 +165,19 @@
 								" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
 								" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
 								" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-								'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "'
+								'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "',
+								" . $planet_corellia . ",
+								" . $planet_dantooine . ",
+								" . $planet_dathomir . ",
+								" . $planet_endor . ",
+								" . $planet_lok . ",
+								" . $planet_naboo . ",
+								" . $planet_rori . ",
+								" . $planet_talus . ",
+								" . $planet_tatooine . ",
+								" . $planet_yavin4 . ",
+								" . $planet_kashyyyk . ",
+								" . $planet_mustafar . "								
 							)
 						";
 						mysqli_query($link, $insert);
@@ -111,109 +190,184 @@
 		}
 	}
 
-	// galaxy harvester import (match on name to see if we need to add it or not)
-	$linkToXmlFile = $gh_feed;
-	$ch = curl_init();
-	curl_setopt_array($ch, array(
-	CURLOPT_URL => $linkToXmlFile
-		, CURLOPT_HEADER => 0
-		, CURLOPT_RETURNTRANSFER => 1
-	));
-
-	$data = curl_exec($ch);
-	curl_close($ch);
-	$xml = simplexml_load_string($data, "SimpleXMLElement", LIBXML_NOCDATA);
-	$json = json_encode($xml);
-	$array = json_decode($json);
-
-	foreach ($array->resource as $resource) {
-
-		// do stupid category cleanup to match formatting..
-		$resource_category_name = $resource->resource_type;
-		$resource_category_name = str_replace("Kashyyyk ", "Kashyyykian ", $resource_category_name);
-		$resource_category_name = str_replace("Dantooinian ", "Dantooine ", $resource_category_name);
-		$resource_category_name = str_replace("Corellian Fiberplast", "Corellia Fiberplast", $resource_category_name);
-		$resource_category_name = str_replace("Corellian Berry Fruit", "Corellia Berry Fruit", $resource_category_name);
-		$resource_category_name = str_replace("Corellian Evergreen Wood", "Corellia Evergreen Wood", $resource_category_name);
-		$resource_category_name = str_replace("Corellian Flower Fruit", "Corellia Flower Fruit", $resource_category_name);
-		$resource_category_name = str_replace("Egg Meat", "Egg", $resource_category_name);
-
-		///// can we make some assumptions on planet based on the resource name?
-
-		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' LIMIT 1";
-		if ($result = mysqli_query($link, $sql)) {
-
-			if (mysqli_num_rows($result) > 0) {
-				$row = mysqli_fetch_array($result);
-				if (@$row['id']) {
-					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE source = 2 AND status = 0 AND id = ' . $row['id']);
-				}
-			} else {
-				echo "we dont have this.. <br/>";
-
-				$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
-				if ($resultx = mysqli_query($link, $sqlx)) {
-					if (mysqli_num_rows($resultx) > 0) {
-						$rowx = mysqli_fetch_array($resultx);
-						if (@$rowx['id']) {
-							$resource_type_id = $rowx['id'];
-						} else {
-							$resource_type_id = null;
-						}
-					} else {
-
-						$sqli = "INSERT INTO resource_types (resource_code, resource_name) VALUES ('', '" . addslashes($resource_category_name) . "')";
-						mysqli_query($link, $sqli);
-
-						$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
-						if ($resultx = mysqli_query($link, $sqlx)) {
-							if (mysqli_num_rows($resultx) > 0) {
-								$rowx = mysqli_fetch_array($resultx);
-								if (@$rowx['id']) {
-									$resource_type_id = $rowx['id'];
-								} else {
-									$resource_type_id = null;
-								}
-							} else {
-								$resource_type_id = null;
-							}
-						}
-					}
-				} else {
-					$resource_type_id = null;
-				}
-
-				echo $resource->name . "<br/>";
-				echo $resource->resource_type . "<br/>";
-				$timestamp = strtotime($resource->enter_date);
-
-				$insert = "
-					INSERT INTO resources (source, name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id)
-					VALUES (2, 
-						" . ((isset($resource->name)) ? "'" . addslashes(ucfirst($resource->name)) . "'" : 'NULL') . ",
-						" . $resource_type_id . ", NULL, 
-						" . ((isset($resource->resource_type)) ? "'" . addslashes($resource_category_name) . "'" : 'NULL') . ",
-						" . ((isset($resource->stats->CR)) ? "'" . $resource->stats->CR . "'" : '0') . ",
-						" . ((isset($resource->stats->CD)) ? "'" . $resource->stats->CD . "'" : '0') . ",
-						" . ((isset($resource->stats->DR)) ? "'" . $resource->stats->DR . "'" : '0') . ",
-						" . ((isset($resource->stats->HR)) ? "'" . $resource->stats->HR . "'" : '0') . ",
-						" . ((isset($resource->stats->MA)) ? "'" . $resource->stats->MA . "'" : '0') . ",
-						" . ((isset($resource->stats->OQ)) ? "'" . $resource->stats->OQ . "'" : '0') . ",
-						" . ((isset($resource->stats->SR)) ? "'" . $resource->stats->SR . "'" : '0') . ",
-						" . ((isset($resource->stats->UT)) ? "'" . $resource->stats->UT . "'" : '0') . ",
-						" . ((isset($resource->stats->FL)) ? "'" . $resource->stats->FL . "'" : '0') . ",
-						" . ((isset($resource->stats->PE)) ? "'" . $resource->stats->PE . "'" : '0') . ",
-						'" . $timestamp . "', 1, NULL
-					)
-				";
-				mysqli_query($link, $insert);
-				echo 'need to add.. <br/><br/>';
-
-			}
-
-		}
-
-	}
+//	// galaxy harvester import (match on name to see if we need to add it or not)
+//	$linkToXmlFile = $gh_feed;
+//	$ch = curl_init();
+//	curl_setopt_array($ch, array(
+//	CURLOPT_URL => $linkToXmlFile
+//		, CURLOPT_HEADER => 0
+//		, CURLOPT_RETURNTRANSFER => 1
+//	));
+//
+//	$data = curl_exec($ch);
+//	curl_close($ch);
+//	$xml = simplexml_load_string($data, "SimpleXMLElement", LIBXML_NOCDATA);
+//	$json = json_encode($xml);
+//	$array = json_decode($json);
+//
+//	foreach ($array->resource as $resource) {
+//
+//		// do stupid category cleanup to match formatting..
+//		$resource_category_name = $resource->resource_type;
+//		$resource_category_name = str_replace("Kashyyyk ", "Kashyyykian ", $resource_category_name);
+//		$resource_category_name = str_replace("Dantooinian ", "Dantooine ", $resource_category_name);
+//		$resource_category_name = str_replace("Corellian Fiberplast", "Corellia Fiberplast", $resource_category_name);
+//		$resource_category_name = str_replace("Corellian Berry Fruit", "Corellia Berry Fruit", $resource_category_name);
+//		$resource_category_name = str_replace("Corellian Evergreen Wood", "Corellia Evergreen Wood", $resource_category_name);
+//		$resource_category_name = str_replace("Corellian Flower Fruit", "Corellia Flower Fruit", $resource_category_name);
+//		$resource_category_name = str_replace("Egg Meat", "Egg", $resource_category_name);
+//
+//		// can we make some assumptions on planet based on the resource name?
+//		$planet_corellia = 0;
+//		$planet_dantooine = 0;
+//		$planet_dathomir = 0;
+//		$planet_endor = 0;
+//		$planet_lok = 0;
+//		$planet_naboo = 0;
+//		$planet_rori = 0;
+//		$planet_talus = 0;
+//		$planet_tatooine = 0;
+//		$planet_yavin4 = 0;
+//		$planet_kashyyyk = 0;
+//		$planet_mustafar = 0;
+//
+//		if (strpos(strtolower($resource_category_name), 'corellia') !== false) {
+//			$planet_corellia = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'dantooin') !== false) {
+//			$planet_dantooine = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'dathomir') !== false) {
+//			$planet_dathomir = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'endor') !== false) {
+//			$planet_endor = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'lokian') !== false) {
+//			$planet_lok = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'naboo') !== false) {
+//			$planet_naboo = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'rori') !== false) {
+//			$planet_rori = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'talus') !== false) {
+//			$planet_talus = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'tatooin') !== false) {
+//			$planet_tatooine = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'yavin') !== false) {
+//			$planet_yavin4 = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'kashyyyk') !== false) {
+//			$planet_kashyyyk = 1;
+//		}
+//		if (strpos(strtolower($resource_category_name), 'mustafar') !== false) {
+//			$planet_mustafar = 1;
+//		}
+//
+//		$sql = "SELECT * FROM resources WHERE name = '" . addslashes($resource->name) . "' LIMIT 1";
+//		if ($result = mysqli_query($link, $sql)) {
+//
+//			if (mysqli_num_rows($result) > 0) {
+//				$row = mysqli_fetch_array($result);
+//				if (@$row['id']) {
+//					mysqli_query($link, 'UPDATE resources SET status = 1 WHERE source = 2 AND status = 0 AND id = ' . $row['id']);
+//					// todo: change this to update stats as well
+//				}
+//			} else {
+//				echo "we dont have this.. <br/>";
+//
+//				$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
+//				if ($resultx = mysqli_query($link, $sqlx)) {
+//					if (mysqli_num_rows($resultx) > 0) {
+//						$rowx = mysqli_fetch_array($resultx);
+//						if (@$rowx['id']) {
+//							$resource_type_id = $rowx['id'];
+//						} else {
+//							$resource_type_id = null;
+//						}
+//					} else {
+//
+//						$sqli = "INSERT INTO resource_types (resource_code, resource_name) VALUES ('', '" . addslashes($resource_category_name) . "')";
+//						mysqli_query($link, $sqli);
+//
+//						$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource_category_name) . "' LIMIT 1";
+//						if ($resultx = mysqli_query($link, $sqlx)) {
+//							if (mysqli_num_rows($resultx) > 0) {
+//								$rowx = mysqli_fetch_array($resultx);
+//								if (@$rowx['id']) {
+//									$resource_type_id = $rowx['id'];
+//								} else {
+//									$resource_type_id = null;
+//								}
+//							} else {
+//								$resource_type_id = null;
+//							}
+//						}
+//					}
+//				} else {
+//					$resource_type_id = null;
+//				}
+//
+//				echo $resource->name . "<br/>";
+//				echo $resource->resource_type . "<br/>";
+//				$timestamp = strtotime($resource->enter_date);
+//
+//				$insert = "
+//					INSERT INTO resources (source, name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
+//								planet_corellia,
+//								planet_dantooine,
+//								planet_dathomir,
+//								planet_endor,
+//								planet_lok,
+//								planet_naboo,
+//								planet_rori,
+//								planet_talus,
+//								planet_tatooine,
+//								planet_yavin4,
+//								planet_kashyyyk,
+//								planet_mustafar
+//					)
+//					VALUES (2,
+//						" . ((isset($resource->name)) ? "'" . addslashes(ucfirst($resource->name)) . "'" : 'NULL') . ",
+//						" . $resource_type_id . ", NULL,
+//						" . ((isset($resource->resource_type)) ? "'" . addslashes($resource_category_name) . "'" : 'NULL') . ",
+//						" . ((isset($resource->stats->CR)) ? "'" . $resource->stats->CR . "'" : '0') . ",
+//						" . ((isset($resource->stats->CD)) ? "'" . $resource->stats->CD . "'" : '0') . ",
+//						" . ((isset($resource->stats->DR)) ? "'" . $resource->stats->DR . "'" : '0') . ",
+//						" . ((isset($resource->stats->HR)) ? "'" . $resource->stats->HR . "'" : '0') . ",
+//						" . ((isset($resource->stats->MA)) ? "'" . $resource->stats->MA . "'" : '0') . ",
+//						" . ((isset($resource->stats->OQ)) ? "'" . $resource->stats->OQ . "'" : '0') . ",
+//						" . ((isset($resource->stats->SR)) ? "'" . $resource->stats->SR . "'" : '0') . ",
+//						" . ((isset($resource->stats->UT)) ? "'" . $resource->stats->UT . "'" : '0') . ",
+//						" . ((isset($resource->stats->FL)) ? "'" . $resource->stats->FL . "'" : '0') . ",
+//						" . ((isset($resource->stats->PE)) ? "'" . $resource->stats->PE . "'" : '0') . ",
+//						'" . $timestamp . "', 1, NULL,
+//						" . $planet_corellia . ",
+//						" . $planet_dantooine . ",
+//						" . $planet_dathomir . ",
+//						" . $planet_endor . ",
+//						" . $planet_lok . ",
+//						" . $planet_naboo . ",
+//						" . $planet_rori . ",
+//						" . $planet_talus . ",
+//						" . $planet_tatooine . ",
+//						" . $planet_yavin4 . ",
+//						" . $planet_kashyyyk . ",
+//						" . $planet_mustafar . "
+//					)
+//				";
+//				mysqli_query($link, $insert);
+//				echo 'need to add.. <br/><br/>';
+//
+//			}
+//
+//		}
+//
+//	}
 
 	// run weighted averages
 	$sql = "SELECT id, oq, sr, dr, pe, cd, ut, fl FROM resources WHERE weighted_med1 is null OR weighted_med2 is null OR weighted_med3 is null OR weighted_med4 is null OR weighted_art1 is null OR weighted_as1 is null OR weighted_as2 is null OR weighted_chef1 is null OR weighted_chef2 is null OR weighted_chef3 is null OR weighted_chef4 is null OR weighted_chef5 is null OR weighted_chef6 is null OR weighted_chef7 is null OR weighted_chef8 is null OR weighted_chef9 is null or weighted_ws1 is null or weighted_ws2 is null or weighted_ws3 is null or weighted_ws4 is null or weighted_ws5 is null or weighted_ws6 is null or weighted_ws7 is null";
