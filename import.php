@@ -134,6 +134,86 @@
 					echo $resource->type . "<br/>";
 
 					if (@$resource->stats->oq) {
+
+						// look for planets
+						if (is_array($resource->planets->planet)) {
+							foreach ($resource->planets->planet as $planet) {
+								if (@$planet->name == "Corellia") {
+									$planet_corellia = 1;
+								}
+								if (@$planet->name == "Dantooine") {
+									$planet_dantooine = 1;
+								}
+								if (@$planet->name == "Dathomir") {
+									$planet_dathomir = 1;
+								}
+								if (@$planet->name == "Endor") {
+									$planet_endor = 1;
+								}
+								if (@$planet->name == "Lok") {
+									$planet_lok = 1;
+								}
+								if (@$planet->name == "Naboo") {
+									$planet_naboo = 1;
+								}
+								if (@$planet->name == "Rori") {
+									$planet_rori = 1;
+								}
+								if (@$planet->name == "Talus") {
+									$planet_talus = 1;
+								}
+								if (@$planet->name == "Tatooine") {
+									$planet_tatooine = 1;
+								}
+								if (@$planet->name == "Yavin 4") {
+									$planet_yavin4 = 1;
+								}
+								if (@$planet->name == "Kashyyyk") {
+									$planet_kashyyyk = 1;
+								}
+								if (@$planet->name == "Mustafar") {
+									$planet_mustafar = 1;
+								}
+							}
+						} else {
+							if (@$resource->planets->planet->name == "Corellia") {
+								$planet_corellia = 1;
+							}
+							if (@$resource->planets->planet->name == "Dantooine") {
+								$planet_dantooine = 1;
+							}
+							if (@$resource->planets->planet->name == "Dathomir") {
+								$planet_dathomir = 1;
+							}
+							if (@$resource->planets->planet->name == "Endor") {
+								$planet_endor = 1;
+							}
+							if (@$resource->planets->planet->name == "Lok") {
+								$planet_lok = 1;
+							}
+							if (@$resource->planets->planet->name == "Naboo") {
+								$planet_naboo = 1;
+							}
+							if (@$resource->planets->planet->name == "Rori") {
+								$planet_rori = 1;
+							}
+							if (@$resource->planets->planet->name == "Talus") {
+								$planet_talus = 1;
+							}
+							if (@$resource->planets->planet->name == "Tatooine") {
+								$planet_tatooine = 1;
+							}
+							if (@$resource->planets->planet->name == "Yavin 4") {
+								$planet_yavin4 = 1;
+							}
+							if (@$resource->planets->planet->name == "Kashyyyk") {
+								$planet_kashyyyk = 1;
+							}
+							if (@$resource->planets->planet->name == "Mustafar") {
+								$planet_mustafar = 1;
+							}
+						}
+
 						echo 'need to add.. <br/><br/>';
 						$insert = "
 							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
