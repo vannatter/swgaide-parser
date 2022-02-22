@@ -37,6 +37,17 @@
 
 			$resource_category_name = $resource->type;
 
+			$cr_max = 1000;
+			$cd_max = 1000;
+			$dr_max = 1000;
+			$hr_max = 1000;
+			$ma_max = 1000;
+			$oq_max = 1000;
+			$sr_max = 1000;
+			$ut_max = 1000;
+			$fl_max = 1000;
+			$pe_max = 1000;
+
 			// can we make some assumptions on planet based on the resource name?
 			$planet_corellia = 0;
 			$planet_dantooine = 0;
@@ -98,12 +109,22 @@
 					}
 				} else {
 
-					$sqlx = "SELECT id FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
+					$sqlx = "SELECT * FROM resource_types WHERE resource_name = '" . addslashes($resource->type) . "' AND resource_code = '" . addslashes($resource->swgaide_type_id) . "' LIMIT 1";
 					if ($resultx = mysqli_query($link, $sqlx)) {
 						if (mysqli_num_rows($resultx) > 0) {
 							$rowx = mysqli_fetch_array($resultx);
 							if (@$rowx['id']) {
 								$resource_type_id = $rowx['id'];
+								$cr_max = $rowx['cr_max'];
+								$cd_max = $rowx['cd_max'];
+								$dr_max = $rowx['dr_max'];
+								$hr_max = $rowx['hr_max'];
+								$ma_max = $rowx['ma_max'];
+								$oq_max = $rowx['oq_max'];
+								$sr_max = $rowx['sr_max'];
+								$ut_max = $rowx['ut_max'];
+								$fl_max = $rowx['fl_max'];
+								$pe_max = $rowx['pe_max'];
 							} else {
 								$resource_type_id = null;
 							}
@@ -228,7 +249,17 @@
 								planet_tatooine,
 								planet_yavin4,
 								planet_kashyyyk,
-								planet_mustafar
+								planet_mustafar,
+								cr_max,
+								cd_max,
+								dr_max,
+								hr_max,
+								ma_max,
+								oq_max,
+								sr_max,
+								ut_max,
+								fl_max,
+								pe_max
 							)
 							VALUES (
 								" . ((isset($resource->name)) ? "'" . addslashes($resource->name) . "'" : 'NULL') . ",
@@ -257,7 +288,17 @@
 								" . $planet_tatooine . ",
 								" . $planet_yavin4 . ",
 								" . $planet_kashyyyk . ",
-								" . $planet_mustafar . "								
+								" . $planet_mustafar . ",
+								" . $cr_max . ",
+								" . $cd_max . ",
+								" . $dr_max . ",
+								" . $hr_max . ",
+								" . $ma_max . ",
+								" . $oq_max . ",
+								" . $sr_max . ",
+								" . $ut_max . ",
+								" . $fl_max . ",
+								" . $pe_max . "														
 							)
 						";
 						mysqli_query($link, $insert);
