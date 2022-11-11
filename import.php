@@ -235,7 +235,7 @@
 							}
 						}
 
-						echo 'need to add.. <br/><br/>';
+						echo 'need to addx.. <br/><br/>';
 						$insert = "
 							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
 								planet_corellia,
