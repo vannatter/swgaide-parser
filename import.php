@@ -301,6 +301,7 @@
 								" . $pe_max . "														
 							)
 						";
+						echo $insert . "<br/>";
 						mysqli_query($link, $insert);
 					} else {
 						echo 'stats are blank, not adding shit... <br/><br/>';
