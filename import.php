@@ -240,6 +240,8 @@
 						print_r($resource);
 						echo "</pre>";
 
+						// 								" . ((isset($resource->available_timestamp)) ? "'" . $resource->available_timestamp . "'" : '0') . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
+
 						$insert = "
 							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
 								planet_corellia,
@@ -280,7 +282,7 @@
 								" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
 								" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
 								" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-								" . ((isset($resource->available_timestamp)) ? "'" . $resource->available_timestamp . "'" : '0') . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
+								0, 1, '" . $resource->{'@attributes'}->swgaide_id . "',
 								" . $planet_corellia . ",
 								" . $planet_dantooine . ",
 								" . $planet_dathomir . ",
