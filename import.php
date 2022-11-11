@@ -236,6 +236,10 @@
 						}
 
 						echo 'need to addx.. <br/><br/>';
+						echo "<pre>";
+						print_r($resource);
+						echo "</pre>";
+
 						$insert = "
 							INSERT INTO resources (name, resource_type_id, type_code, type_name, cr, cd, dr, hr, ma, oq, sr, ut, fl, pe, timestamp, status, swgaide_id,
 								planet_corellia,
@@ -301,7 +305,6 @@
 								" . $pe_max . "														
 							)
 						";
-						echo "insert = " . $insert . "<br/>";
 						mysqli_query($link, $insert);
 					} else {
 						echo 'stats are blank, not adding shit... <br/><br/>';
