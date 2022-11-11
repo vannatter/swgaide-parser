@@ -240,6 +240,11 @@
 						print_r($resource);
 						echo "</pre>";
 
+						if (isset($resource->available_timestamp)) {
+							$timestamp = $resource->available_timestamp;
+						} else {
+							$timestamp = time();
+						}
 						// 								" . ((isset($resource->available_timestamp)) ? "'" . $resource->available_timestamp . "'" : '0') . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
 
 						$insert = "
@@ -282,7 +287,7 @@
 								" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
 								" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
 								" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-								0, 1, '" . $resource->{'@attributes'}->swgaide_id . "',
+								" . $timestamp . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
 								" . $planet_corellia . ",
 								" . $planet_dantooine . ",
 								" . $planet_dathomir . ",
