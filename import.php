@@ -240,11 +240,12 @@
 						print_r($resource);
 						echo "</pre>";
 
-						if (isset($resource->available_timestamp)) {
-							$timestamp = $resource->available_timestamp;
-						} else {
+						if (is_object($resource->available_timestamp)) {
 							$timestamp = time();
+						} else {
+							$timestamp = $resource->available_timestamp;
 						}
+
 						// 								" . ((isset($resource->available_timestamp)) ? "'" . $resource->available_timestamp . "'" : '0') . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
 
 						$insert = "
