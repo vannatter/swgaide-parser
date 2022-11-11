@@ -280,7 +280,7 @@
 								" . ((isset($resource->stats->ut)) ? "'" . $resource->stats->ut . "'" : '0') . ",
 								" . ((isset($resource->stats->fl)) ? "'" . $resource->stats->fl . "'" : '0') . ",
 								" . ((isset($resource->stats->pe)) ? "'" . $resource->stats->pe . "'" : '0') . ",
-								'" . $resource->available_timestamp . "', 1, '" . $resource->{'@attributes'}->swgaide_id . "',
+								" . ((isset($resource->available_timestamp)) ? "'" . $resource->available_timestamp . "'" : '0') . ", 1, '" . $resource->{'@attributes'}->swgaide_id . "',
 								" . $planet_corellia . ",
 								" . $planet_dantooine . ",
 								" . $planet_dathomir . ",
@@ -305,6 +305,8 @@
 								" . $pe_max . "														
 							)
 						";
+
+						echo $insert . "<br/>";
 						mysqli_query($link, $insert);
 					} else {
 						echo 'stats are blank, not adding shit... <br/><br/>';
